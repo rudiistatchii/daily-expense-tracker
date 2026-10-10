@@ -164,19 +164,13 @@ def menu_cari(manager):
     if pilihan == "1":
         kategori_cari = input("Masukkan kata kunci kategori: ").strip()
     elif pilihan == "2":
-        tanggal_input = input("Masukkan tanggal (YYYY-MM-DD): ").strip()
-        try:
-            tanggal_cari = cek_tanggal(date_string=tanggal_input)
-        except ValueError as err:
-            print(f"[Error Validasi] {err}")
+        tanggal_cari = input_tanggal("Masukkan tanggal (YYYY-MM-DD): ")
+        if tanggal_cari is None:
             return
     elif pilihan == "3":
         kategori_cari = input("Masukkan kata kunci kategori: ").strip()
-        tanggal_input = input("Masukkan tanggal (YYYY-MM-DD): ").strip()
-        try:
-            tanggal_cari = cek_tanggal(date_string=tanggal_input)
-        except ValueError as err:
-            print(f"[Error Validasi] {err}")
+        tanggal_cari = input_tanggal("Masukkan tanggal (YYYY-MM-DD): ")
+        if tanggal_cari is None:
             return
     else:
         print("[Peringatan] Pilihan tidak valid.")
