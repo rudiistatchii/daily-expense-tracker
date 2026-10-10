@@ -17,6 +17,39 @@ from expense_tracker.report import format_rupiah, ekspor_laporan
 DEFAULT_DATA_FILE = "data/expenses.csv"
 DEFAULT_REPORT_FILE = "data/laporan_pengeluaran.txt"
 
+def input_tanggal(prompt_text, default_value=None):
+    """Membaca dan memvalidasi input tanggal sesuai format yang dipersyaratkan."""
+    tanggal_input = input(prompt_text).strip()
+    if not tanggal_input and default_value:
+        # Pakai nilai bawaan hanya jika disediakan (misalnya di menu_tambah)
+        tanggal_input = default_value
+
+    try:
+        return cek_tanggal(date_string=tanggal_input)
+    except ValueError as err:
+        print(f"[Error Validasi] {err}")
+        return None
+
+
+def input_kategori(prompt_text):
+    """Membaca dan memvalidasi input kategori."""
+    kategori_input = input(prompt_text).strip()
+    try:
+        return cek_kategori(category_string=kategori_input)
+    except ValueError as err:
+        print(f"[Error Validasi] {err}")
+        return None
+
+
+def input_nominal(prompt_text):
+    """Membaca dan memvalidasi input nominal pengeluaran."""
+    nominal_input = input(prompt_text).strip()
+    try:
+        return cek_nominal(amount_input=nominal_input)
+    except ValueError as err:
+        print(f"[Error Validasi] {err}")
+        return None
+
 
 def clear_screen():
     """Membersihkan tampilan terminal sederhana."""
@@ -52,30 +85,25 @@ def menu_tambah(manager):
     """
     print("\n--- Tambah Pengeluaran Baru ---")
     today_str = datetime.now().strftime("%Y-%m-%d")
-    # Input tanggal
-    tanggal_input = input(f"Masukkan tanggal (YYYY-MM-DD) [Tekan Enter untuk {today_str}]: ").strip()
-    if not tanggal_input:
-        tanggal_input = today_str
-    try:
-        tanggal_valid = cek_tanggal(date_string=tanggal_input)
-    except ValueError as err:
-        print(f"[Error Validasi] {err}")
-        return
 
-    # Input kategori
-    kategori_input = input("Masukkan kategori (contoh: Makanan, Transport, Kuliah, Hiburan): ").strip()
-    try:
-        kategori_valid = cek_kategori(category_string=kategori_input)
-    except ValueError as err:
-        print(f"[Error Validasi] {err}")
+    #input tanggal
+    tanggal_valid = input_tanggal(
+        f"Masukkan tanggal (YYYY-MM-DD) [Tekan Enter untuk {today_str}]: ",
+        default_value=today_str,
+    )
+    if tanggal_valid is None:
         return
-
-    # Input nominal
-    nominal_input = input("Masukkan nominal pengeluaran (contoh: 25000): ").strip()
-    try:
-        nominal_valid = cek_nominal(amount_input=nominal_input)
-    except ValueError as err:
-        print(f"[Error Validasi] {err}")
+    
+    #input kategori
+    kategori_valid = input_kategori(
+        "Masukkan kategori (contoh: Makanan, Transport, Kuliah, Hiburan): "
+    )
+    if kategori_valid is None:
+        return
+    
+    #input nominal
+    nominal_valid = input_nominal("Masukkan nominal pengeluaran (contoh: 25000): ")
+    if nominal_valid is None:
         return
 
     keterangan_input = input("Masukkan keterangan (opsional, tekan Enter untuk default '-'): ").strip()
