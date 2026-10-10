@@ -1,0 +1,18 @@
+# Dokumentasi Refactoring - Daily Expense Tracker
+
+Dokumen ini mencatat riwayat perbaikan kualitas kode (*code refactoring*) yang dilakukan secara nyata selama pengembangan proyek **Daily Expense Tracker**. Refactoring bertujuan untuk meningkatkan keterbacaan kode (*readability*), modularitas, kemudahan pemeliharaan (*maintainability*), serta kepatuhan terhadap prinsip *Clean Code* untuk mahasiswa pemula.
+
+## Tabel Riwayat Refactoring
+
+| Bagian Sebelum Perbaikan | Bagian Sesudah Perbaikan | Teknik Refactoring | Alasan |
+| :--- | :--- | :--- | :--- |
+| **Parsing baris CSV menyatu di dalam fungsi baca file**:<br>```python<br>def load_expenses_from_csv(filepath):<br>    expenses = []<br>    with open(filepath, "r") as f:<br>        for line in f:<br>            parts = line.strip().split(",", 3)<br>            if len(parts) == 4:<br>                # validasi bertumpuk langsung di loop...<br>                expenses.append(...)<br>    return expenses<br>``` | **Ekstraksi logika parsing ke fungsi mandiri**:<br>```python<br>def parse_csv_line(line: str) -> Optional[Dict[str, Any]]:<br>    # parsing dan validasi satu baris terisolasi<br>    ...<br><br>def load_expenses_from_csv(filepath):<br>    ...<br>    for line in file:<br>        record = parse_csv_line(line)<br>        if record:<br>            expenses.append(record)<br>``` | **Extract Function** | Memisahkan tanggung jawab parsing baris tunggal dari alur pembacaan berkas (prinsip *Single Responsibility*). Menjadikan fungsi `load_expenses_from_csv` lebih ringkas, serta mempermudah pengujian unit terhadap data rusak tanpa perlu membaca berkas fisik. |
+| **Penamaan variabel singkatan 1 huruf yang ambigu**:<br>```python<br>def calculate_average(self):<br>    if not self.expenses:<br>        return 0.0<br>    t = self.calculate_total()<br>    c = len(self.expenses)<br>    r = t / c<br>    return round(r, 2)<br>``` | **Penamaan variabel deskriptif dan ekspresif**:<br>```python<br>def calculate_average(self):<br>    if not self.expenses:<br>        return 0.0<br>    total_pengeluaran = self.calculate_total()<br>    jumlah_transaksi = len(self.expenses)<br>    rata_rata = total_pengeluaran / jumlah_transaksi<br>    return round(rata_rata, 2)<br>``` | **Rename Variable** | Meningkatkan keterbacaan (*readability*). Variabel deskriptif seperti `total_pengeluaran` dan `jumlah_transaksi` langsung mencerminkan makna data dalam domain pengeluaran, sehingga kode mudah dipahami mahasiswa pemula tanpa perlu menebak arti singkatan. |
+| **Duplikasi format mata uang di berbagai tempat**:<br>```python<br># Ditulis berulang di main.py dan report.py:<br># main.py:<br>print(f"Nominal: Rp {exp['nominal']:,.2f}")<br># report.py:<br>lines.append(f"Rp {nom:,.2f}")<br>``` | **Penyatuan ke satu fungsi utilitas terpusat**:<br>```python<br># report.py:<br>def format_currency(amount: float) -> str:<br>    val = float(amount)<br>    formatted = f"{val:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")<br>    return f"Rp {formatted}"<br><br># Digunakan konsisten di main.py & report.py<br>``` | **Remove Duplicate Code** | Menghindari duplikasi logika (*Don't Repeat Yourself* - DRY). Memastikan format rupiah (pemisah ribuan dengan titik dan desimal dengan koma sesuai format Indonesia) seragam di seluruh tampilan terminal maupun ekspor berkas laporan teks. |
+
+---
+
+## Ringkasan Manfaat Refactoring
+1. **Modularitas Tinggi**: Kode terpisah rapi ke dalam modul `validation`, `fileio`, `processing`, dan `report`.
+2. **Robustness**: Penanganan data rusak pada CSV terisolasi rapi dan tidak menghentikan jalannya aplikasi.
+3. **Standarisasi Tampilan**: Pemusatan fungsi `format_currency` menjamin konsistensi representasi mata uang di seluruh antarmuka.
