@@ -52,41 +52,40 @@ def menu_tambah(manager):
     """
     print("\n--- Tambah Pengeluaran Baru ---")
     today_str = datetime.now().strftime("%Y-%m-%d")
-
     # Input tanggal
-    raw_date = input(f"Masukkan tanggal (YYYY-MM-DD) [Tekan Enter untuk {today_str}]: ").strip()
-    if not raw_date:
-        raw_date = today_str
+    tanggal_input = input(f"Masukkan tanggal (YYYY-MM-DD) [Tekan Enter untuk {today_str}]: ").strip()
+    if not tanggal_input:
+        tanggal_input = today_str
     try:
-        valid_date = cek_tanggal(date_string=raw_date)
+        tanggal_valid = cek_tanggal(date_string=tanggal_input)
     except ValueError as err:
         print(f"[Error Validasi] {err}")
         return
 
     # Input kategori
-    raw_cat = input("Masukkan kategori (contoh: Makanan, Transport, Kuliah, Hiburan): ").strip()
+    kategori_input = input("Masukkan kategori (contoh: Makanan, Transport, Kuliah, Hiburan): ").strip()
     try:
-        valid_cat = cek_kategori(category_string=raw_cat)
+        kategori_valid = cek_kategori(category_string=kategori_input)
     except ValueError as err:
         print(f"[Error Validasi] {err}")
         return
 
     # Input nominal
-    raw_amount = input("Masukkan nominal pengeluaran (contoh: 25000): ").strip()
+    nominal_input = input("Masukkan nominal pengeluaran (contoh: 25000): ").strip()
     try:
-        valid_amount = cek_nominal(amount_input=raw_amount)
+        nominal_valid = cek_nominal(amount_input=nominal_input)
     except ValueError as err:
         print(f"[Error Validasi] {err}")
         return
 
-    raw_desc = input("Masukkan keterangan (opsional, tekan Enter untuk default '-'): ").strip()
-    valid_desc = cek_keterangan(description_string=raw_desc)
+    keterangan_input = input("Masukkan keterangan (opsional, tekan Enter untuk default '-'): ").strip()
+    keterangan_valid = cek_keterangan(description_string=keterangan_input)
 
     record = manager.tambah_data(
-        tanggal=valid_date,
-        kategori=valid_cat,
-        nominal=valid_amount,
-        keterangan=valid_desc,
+        tanggal=tanggal_valid,
+        kategori=kategori_valid,
+        nominal=nominal_valid,
+        keterangan=keterangan_valid,
     )
 
     print("\n[Berhasil] Transaksi baru berhasil dicatat dan disimpan ke file CSV!")
